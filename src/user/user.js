@@ -17,6 +17,7 @@ export class User extends Component {
         super();
         this.attachTemplate(template, style);
         this.bindPropertiesToElements([
+            'id',
             'name',
             'custom',
             'balance',

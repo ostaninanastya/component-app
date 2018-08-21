@@ -14,9 +14,16 @@ export class Component extends HTMLElement {
 
         const shadowRoot = this.attachShadow({mode: 'open'});
         shadowRoot.innerHTML = style + template;
+        //строит DOM
+        // лучше использовать appendChild
     }
 
     _addEventListener(query, eventType, callback, isShadowRoot) {
+
+        //делегирование событий. всплытие событий
+        //чтобы не навешивать addEventListener На каждый user
+        //навесим только на userList
+
         const root = isShadowRoot ? this.shadowRoot : this;
 
         const handler = event => {

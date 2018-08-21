@@ -6,6 +6,8 @@ import template from './user-list.html';
 let dependencies = {};
 
 export class UserList extends Component {
+
+    //слабая связность между userService и userList
     static get userService() {
         return dependencies.userService;
     }
@@ -44,7 +46,8 @@ export class UserList extends Component {
         this.records = 20;
         this.currentPage = 1;
         this.addShadowEventListener('ta-user', 'click', this.select);
-        this.addShadowEventListener('ta-pagination', 'change', this.changePage);
+        this.selectedUserId = 0;
+     //   this.addShadowEventListener('ta-pagination', 'change', this.changePage);
     }
 
     connectedCallback() {
@@ -59,12 +62,24 @@ export class UserList extends Component {
     select(event, user) {
         this.users.map(user => user.classList.remove('selected'));
         user.classList.add('selected');
+        console.log(user);
+
+        this.selectedUserId = user.id;
+        this.dispatchEvent(new Event('select', {bubbles: true, composed: true}));
     }
 
     emptyList() {
         while (this.list.hasChildNodes()) {
             this.list.removeChild(this.list.lastChild);
         }
+    }
+
+    get selectedUserId(){
+        return this._selectedUserId;
+    }
+
+    set selectedUserId(value){
+        this._selectedUserId = value;
     }
 
     renderList() {
@@ -75,10 +90,12 @@ export class UserList extends Component {
             this.pagination.recordsPerPage = this.records;
             this.pagination.currentPage = this.currentPage;
 
+
             response.data.map(userData => {
                 const User = customElements.get('ta-user');
                 const user = new User();
 
+                user.id = userData['user_id'];
                 user.name = userData['user_name'];
                 user.custom = userData['user_custom'];
                 user.balance = userData['balance'];

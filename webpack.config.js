@@ -114,7 +114,7 @@ module.exports = function (env, argv) {
         config.devtool = 'eval';
         config.devServer = {
             contentBase: path.join(__dirname, 'dist'),
-            port: 4002
+            port: 4005
         }
     }
 

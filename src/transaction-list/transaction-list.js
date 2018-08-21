@@ -39,8 +39,26 @@ export class TransactionList extends Component {
         return (this.currentPage - 1) * this.records;
     }
 
-    get users() {
-        return Array.from(this.shadowRoot.querySelectorAll('ta-user'));
+    static get observedAttributes() {
+        return ['user-id'];
+    }
+
+    get userId(){
+        return this.getAttribute('user-id');
+    }
+
+    set userId(value){
+        if (value) {
+            this.setAttribute('user-id', value);
+        } else {
+            this.removeAttribute('user-id');
+        }
+    }
+
+    attributeChangedCallback(name, oldValue, newValue) {
+        if (name === 'user-id'){
+            this.renderList();
+        }
     }
 
     constructor() {
@@ -48,7 +66,7 @@ export class TransactionList extends Component {
         this.attachTemplate(template, style);
         this.records = 20;
         this.currentPage = 1;
-        this.addShadowEventListener('ta-transaction', 'click', this.select);
+        //this.addShadowEventListener('ta-user', 'change', this.select);
         this.addShadowEventListener('ta-pagination', 'change', this.changePage);
     }
 
@@ -56,14 +74,15 @@ export class TransactionList extends Component {
         this.renderList();
     }
 
+
+
     changePage(event) {
         this.currentPage = event.detail.page;
         this.renderList();
     }
 
     select(event, transaction) {
-        this.transactions.map(transaction => transaction.classList.remove('selected'));
-        transaction.classList.add('selected');
+        this.renderList();
     }
 
     emptyList() {
@@ -75,13 +94,15 @@ export class TransactionList extends Component {
     renderList() {
         this.emptyList();
 
-        TransactionList.userService.getTransactions(this.users.find(user => user.classList.contains('selected')),
+        if (this.userId === null) return;
+        TransactionList.userService.getTransactions(this.userId,
             new Date(2000, 1, 1), new Date()).then(response => {
-            this.pagination.totalRecords = response['recordsTotal'];
+
+            this.pagination.totalRecords = response.length;
             this.pagination.recordsPerPage = this.records;
             this.pagination.currentPage = this.currentPage;
 
-            response.data.map(transactionData => {
+            response.map(transactionData => {
                 const Transaction = customElements.get('ta-transaction');
                 const transaction = new Transaction();
 
