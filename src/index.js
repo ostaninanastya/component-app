@@ -29,7 +29,5 @@ const transactionList = document.querySelector('ta-transaction-list');
 const userList = document.querySelector('ta-user-list');
 
 userList.addEventListener('select', () => {
-    console.log("selected user id");
-    console.log(userList.selectedUserId);
     transactionList.userId = userList.selectedUserId;
 });
